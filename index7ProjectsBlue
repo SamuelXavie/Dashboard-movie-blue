@@ -1,0 +1,1003 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TopFilmes- Classificação Indicativa Nacional</title>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;900&display=swap" rel="stylesheet">
+
+    <style>
+        /* ==========================================================================
+           DESIGN SYSTEM & PALETA INSPIRADA NO DISNEY+ (PREMIUM DARK)
+           ========================================================================== */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --bg-body: #090b13;         /* O azul-escuro profundo clássico do Disney+ */
+            --bg-navbar: #0e111d;       /* Barra superior levemente mais clara */
+            --bg-card: #1a1d29;         /* Cards de conteúdo */
+            --primary-accent: #0063e5;  /* Azul Disney+ */
+            --primary-glow: #00d2ff;    /* Brilho neon de seleção */
+            --text-main: #f9f9f9;
+            --text-muted: #8f9199;
+            --text-description: #cacaca;
+            --danger-color: #ff5252;
+            --success-color: #00e676;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(to bottom, #141b29 0%, var(--bg-body) 40%) no-repeat fixed;
+            color: var(--text-main);
+            min-height: 100vh;
+            -webkit-font-smoothing: antialiased;
+            overflow-x: hidden;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 4%;
+        }
+
+        /* ==========================================================================
+           TELA DE AUTENTICAÇÃO CONTROLADA (LOGIN / CADASTRO)
+           ========================================================================== */
+        .auth-overlay {
+            position: fixed;
+            inset: 0;
+            background: var(--bg-body);
+            z-index: 2000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        
+        .auth-box {
+            width: 100%;
+            max-width: 400px;
+            background: rgba(26, 29, 41, 0.65);
+            padding: 40px 30px;
+            border-radius: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.6);
+            backdrop-filter: blur(20px);
+        }
+        
+        .auth-logo {
+            font-size: 2.2rem;
+            font-weight: 900;
+            text-align: center;
+            margin-bottom: 30px;
+            letter-spacing: 2px;
+            background: linear-gradient(135deg, #ffffff 30%, var(--primary-glow));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        
+        .auth-box h2 {
+            font-size: 1.4rem;
+            font-weight: 600;
+            margin-bottom: 8px;
+            letter-spacing: -0.5px;
+        }
+        
+        .auth-box p {
+            color: var(--text-muted);
+            font-size: 0.9rem;
+            margin-bottom: 24px;
+            line-height: 1.4;
+        }
+        
+        .input-group {
+            margin-bottom: 16px;
+        }
+        
+        .input-group label {
+            display: block;
+            font-size: 0.8rem;
+            color: var(--text-description);
+            margin-bottom: 6px;
+            font-weight: 500;
+        }
+        
+        .input-group input {
+            width: 100%;
+            padding: 14px 16px;
+            background: #252833;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: 6px;
+            color: #ffffff;
+            font-size: 14px;
+            transition: all 0.2s ease;
+        }
+        
+        .input-group input:focus {
+            outline: none;
+            border-color: var(--primary-accent);
+            background: #2b2e3c;
+            box-shadow: 0 0 10px rgba(0, 99, 229, 0.4);
+        }
+        
+        .btn-auth {
+            width: 100%;
+            padding: 14px;
+            background: var(--primary-accent);
+            border: none;
+            color: #ffffff;
+            font-weight: 600;
+            font-size: 14px;
+            border-radius: 6px;
+            cursor: pointer;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            transition: all 0.2s ease;
+        }
+        
+        .btn-auth:hover {
+            background: #0072ff;
+            box-shadow: 0 0 15px rgba(0, 99, 229, 0.6);
+        }
+        
+        .auth-switch {
+            text-align: center;
+            margin-top: 24px;
+            font-size: 0.85rem;
+            color: var(--text-muted);
+        }
+        
+        .auth-switch span {
+            color: #ffffff;
+            cursor: pointer;
+            font-weight: 500;
+            text-decoration: underline;
+        }
+
+        /* ==========================================================================
+           BARRA DE NAVEGAÇÃO SUPERIOR (DISNEY+ NAVBAR)
+           ========================================================================== */
+        .header {
+            background: var(--bg-navbar);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.02);
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
+        }
+        
+        .header-content {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 30px;
+            padding: 16px 0;
+        }
+        
+        .logo {
+            font-size: 1.6rem;
+            font-weight: 900;
+            cursor: pointer;
+            letter-spacing: 1.5px;
+            background: linear-gradient(135deg, #ffffff 50%, var(--primary-glow));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        
+        .genres-nav {
+            display: flex;
+            gap: 22px;
+        }
+        
+        .genres-nav button {
+            background: transparent;
+            border: none;
+            color: var(--text-main);
+            cursor: pointer;
+            font-size: 13px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            opacity: 0.7;
+            position: relative;
+            transition: all 0.2s ease;
+            padding: 4px 0;
+        }
+        
+        .genres-nav button:hover {
+            opacity: 1;
+        }
+
+        /* Linha animada abaixo dos menus estilo Disney+ */
+        .genres-nav button::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background: #ffffff;
+            transition: width 0.2s ease;
+        }
+
+        .genres-nav button:hover::after {
+            width: 100%;
+        }
+        
+        .search-form {
+            flex: 1;
+            max-width: 300px;
+        }
+        
+        .search-input {
+            width: 100%;
+            padding: 10px 18px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 4px;
+            background: rgba(0, 0, 0, 0.3);
+            color: #ffffff;
+            font-size: 13px;
+            transition: all 0.2s;
+        }
+        
+        .search-input:focus {
+            outline: none;
+            border-color: rgba(255, 255, 255, 0.4);
+            background: rgba(0, 0, 0, 0.6);
+        }
+
+        .profile-display {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        
+        .profile-avatar-mini {
+            width: 32px;
+            height: 32px;
+            background: linear-gradient(135deg, var(--primary-accent), var(--primary-glow));
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 13px;
+            font-weight: 700;
+            box-shadow: 0 0 10px rgba(0, 99, 229, 0.5);
+        }
+        
+        .profile-info-text {
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--text-description);
+        }
+        
+        .btn-logout {
+            background: transparent;
+            border: none;
+            color: var(--danger-color);
+            cursor: pointer;
+            font-size: 12px;
+            font-weight: 600;
+            margin-left: 4px;
+        }
+
+        /* BANNER DE INFORMAÇÃO DA LEI NACIONAL */
+        .law-banner {
+            background: rgba(26, 29, 41, 0.8);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            padding: 16px 20px;
+            border-radius: 8px;
+            margin-bottom: 35px;
+            font-size: 13px;
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            color: var(--text-description);
+            box-shadow: 0 8px 16px rgba(0,0,0,0.2);
+        }
+
+        .law-indicator {
+            background: var(--primary-accent);
+            color: white;
+            font-weight: 900;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 11px;
+            text-transform: uppercase;
+        }
+
+        /* ==========================================================================
+           VITRINE DE FILMES (GRID COESIVO DISNEY+)
+           ========================================================================== */
+        #mainContent {
+            padding: 30px 0;
+        }
+        
+        .section-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+            margin-bottom: 18px;
+            letter-spacing: 0.5px;
+            color: var(--text-main);
+        }
+        
+        .movies-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+            gap: 20px;
+        }
+        
+        .movie-card {
+            background: var(--bg-card);
+            border-radius: 8px;
+            overflow: hidden;
+            cursor: pointer;
+            position: relative;
+            aspect-ratio: 2/3;
+            border: 1px solid rgba(255, 255, 255, 0.04);
+            box-shadow: 0 12px 24px rgba(0,0,0,0.4);
+            transition: all 350ms cubic-bezier(0.25, 1, 0.5, 1);
+        }
+        
+        /* Efeito de borda iluminada estilo Disney+ */
+        .movie-card:hover {
+            transform: scale(1.04);
+            border-color: rgba(249, 249, 249, 0.8);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.6), 0 0 12px rgba(255, 255, 255, 0.15);
+        }
+        
+        .movie-poster {
+            width: 100%;
+            height: 100%;
+        }
+        
+        .movie-poster img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        
+        .movie-info-overlay {
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(to top, rgba(15, 18, 29, 0.95) 0%, rgba(15, 18, 29, 0.3) 50%, transparent 100%);
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-end;
+            padding: 16px;
+            opacity: 0;
+            transition: opacity 300ms ease;
+        }
+        
+        .movie-card:hover .movie-info-overlay {
+            opacity: 1;
+        }
+        
+        .movie-title {
+            font-size: 0.85rem;
+            font-weight: 600;
+            line-height: 1.3;
+            color: #ffffff;
+        }
+
+        /* ==========================================================================
+           MODAL DE DETALHES COMPACTO E MODERNO
+           ========================================================================== */
+        .modal {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(4, 7, 20, 0.85);
+            z-index: 1000;
+            overflow-y: auto;
+            padding: 20px;
+            backdrop-filter: blur(15px);
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .modal.active {
+            display: flex;
+        }
+        
+        .modal-content {
+            background: #1a1d29;
+            width: 100%;
+            max-width: 850px;
+            border-radius: 10px;
+            position: relative;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            overflow: hidden;
+            box-shadow: 0 30px 60px rgba(0, 0, 0, 0.7);
+        }
+        
+        .modal-close {
+            position: absolute;
+            top: 16px;
+            right: 16px;
+            background: rgba(0, 0, 0, 0.5);
+            border: none;
+            color: #ffffff;
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            cursor: pointer;
+            font-weight: bold;
+            z-index: 10;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .modal-flex {
+            display: flex;
+            flex-direction: column;
+        }
+        
+        @media (min-width: 768px) {
+            .modal-flex { flex-direction: row; }
+        }
+        
+        .modal-video-container {
+            width: 100%;
+            background: #000000;
+            aspect-ratio: 16/9;
+        }
+        
+        @media (min-width: 768px) {
+            .modal-video-container { width: 55%; aspect-ratio: auto; min-height: 450px; }
+        }
+        
+        .modal-video-container iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
+        
+        .modal-details {
+            flex: 1;
+            padding: 30px;
+            overflow-y: auto;
+            max-height: 450px;
+        }
+        
+        .modal-movie-title {
+            font-size: 1.6rem;
+            font-weight: 700;
+            margin-bottom: 12px;
+            letter-spacing: -0.5px;
+        }
+        
+        .meta-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            align-items: center;
+            margin-bottom: 18px;
+        }
+        
+        /* Badges de Classificação Indicativa baseados nas Cores Nacionais */
+        .badge-age {
+            color: #ffffff;
+            padding: 3px 8px;
+            border-radius: 4px;
+            font-weight: 700;
+            font-size: 11px;
+        }
+        .badge-age.l    { background: #00a859; } /* Livre: Verde */
+        .badge-age.dez  { background: #0f75bc; } /* 10 anos: Azul */
+        .badge-age.doze { background: #f9a825; } /* 12 anos: Amarelo */
+        .badge-age.ctor { background: #f26522; } /* 14 anos: Laranja */
+        .badge-age.seis { background: #e50914; } /* 16 anos: Vermelho */
+        .badge-age.oito { background: #000000; border: 1px solid #ffffff; } /* 18 anos: Preto */
+        
+        .badge-generic {
+            background: rgba(255, 255, 255, 0.06);
+            padding: 3px 8px;
+            border-radius: 4px;
+            font-size: 11px;
+            color: var(--text-description);
+        }
+        
+        .modal-overview {
+            color: var(--text-description);
+            font-size: 0.9rem;
+            line-height: 1.5;
+            margin-bottom: 20px;
+        }
+
+        .cast-section h4 {
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            color: var(--text-muted);
+            margin-bottom: 10px;
+            letter-spacing: 0.5px;
+        }
+        
+        .cast-grid {
+            display: flex;
+            gap: 12px;
+            overflow-x: auto;
+            padding-bottom: 6px;
+        }
+        
+        .cast-card {
+            flex: 0 0 70px;
+            text-align: center;
+        }
+        
+        .cast-img {
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            object-fit: cover;
+            margin: 0 auto 6px auto;
+            background: #252833;
+            display: block;
+        }
+        
+        .cast-name {
+            font-size: 10px;
+            color: #ffffff;
+            font-weight: 500;
+            line-height: 1.2;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        .footer {
+            padding: 40px 0;
+            border-top: 1px solid rgba(255, 255, 255, 0.02);
+            text-align: center;
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            margin-top: 40px;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="auth-overlay" id="authOverlay">
+        <div class="auth-box" id="loginBox">
+            <div class="auth-logo">TopFilmes</div>
+            <h2>Fazer Login</h2>
+            <p>Insira seus dados para carregar seu perfil de classificação.</p>
+            <form onsubmit="executeLogin(event)">
+                <div class="input-group">
+                    <input type="email" id="loginEmail" placeholder="E-mail cadastrado" required>
+                </div>
+                <div class="input-group">
+                    <input type="password" id="loginPassword" placeholder="Sua senha" required>
+                </div>
+                <button type="submit" class="btn-auth">Entrar</button>
+            </form>
+            <div class="auth-switch">Novo por aqui? <span onclick="toggleAuthMode(true)">Criar conta</span></div>
+        </div>
+
+        <div class="auth-box" id="registerBox" style="display: none;">
+            <div class="auth-logo">TopFilmes</div>
+            <h2>Criar Perfil</h2>
+            <p>Informe sua idade real. O catálogo e as buscas se adaptarão estritamente à lei.</p>
+            <form onsubmit="executeRegister(event)">
+                <div class="input-group">
+                    <input type="text" id="regName" placeholder="Nome do perfil" required>
+                </div>
+                <div class="input-group">
+                    <input type="email" id="regEmail" placeholder="E-mail" required>
+                </div>
+                <div class="input-group">
+                    <input type="password" id="regPassword" placeholder="Senha" required>
+                </div>
+                <div class="input-group">
+                    <label for="regAge">Idade Completa (Filtro Legal Ativo)</label>
+                    <input type="number" id="regAge" min="1" max="120" placeholder="Ex: 9 ou 14" required>
+                </div>
+                <button type="submit" class="btn-auth">Salvar Perfil</button>
+            </form>
+            <div class="auth-switch">Já possui cadastro? <span onclick="toggleAuthMode(false)">Fazer login</span></div>
+        </div>
+    </div>
+
+    <header class="header">
+        <div class="container">
+            <div class="header-content">
+                <div class="logo" onclick="loadHome()">Disney+</div>
+                
+                <nav class="genres-nav" id="dynamicGenresNav"></nav>
+                
+                <form class="search-form" onsubmit="handleSearch(event)">
+                    <input type="text" class="search-input" placeholder="🔍 Pesquisa segura Disney+..." id="searchInput">
+                </form>
+                
+                <div class="profile-display">
+                    <div class="profile-avatar-mini" id="userAvatar">?</div>
+                    <div class="profile-info-text" id="userMeta">Desconectado</div>
+                    <button class="btn-logout" onclick="executeLogout()">Sair</button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main class="container">
+        <div id="mainContent"></div>
+    </main>
+
+    <div class="modal" id="movieModal" onclick="if(event.target === this) closeModal()">
+        <div class="modal-content">
+            <button class="modal-close" onclick="closeModal()">✕</button>
+            <div class="modal-flex">
+                <div class="modal-video-container" id="videoContainer"></div>
+                <div class="modal-details" id="modalDetails"></div>
+            </div>
+        </div>
+    </div>
+
+    <footer class="footer">
+        <div class="container">
+            <p>Disney+ Stream Guard © | Sistema de Filtragem por Strings e Filtro Estrito por Idade em conformidade com o Ministério da Justiça.</p>
+        </div>
+    </footer>
+
+    <script>
+        // Chaves de Comunicação do TMDB
+        const API_KEY = 'd6034ac010f3fce6e88a7ac9c3f02326';
+        const BASE_URL = 'https://api.themoviedb.org/3';
+        const IMAGE_BASE = 'https://image.tmdb.org/t/p/w500';
+
+        // Nós do DOM mapeados
+        const authOverlay = document.getElementById('authOverlay');
+        const loginBox = document.getElementById('loginBox');
+        const registerBox = document.getElementById('registerBox');
+        const mainContent = document.getElementById('mainContent');
+        const movieModal = document.getElementById('movieModal');
+        const videoContainer = document.getElementById('videoContainer');
+        const modalDetails = document.getElementById('modalDetails');
+        const searchInput = document.getElementById('searchInput');
+        const userAvatar = document.getElementById('userAvatar');
+        const userMeta = document.getElementById('userMeta');
+        const dynamicGenresNav = document.getElementById('dynamicGenresNav');
+
+        let activeSession = null;
+
+        // Lista Negra de Strings Preventiva para Menores de 30 anos
+        const EXTREME_BLACKLIST = [
+            'porno', 'erotico', 'erotica', 'milf', 'xxx', 'hentai', 'sexy', 'sexo', 'sensual', 
+            'nudez', 'nude', 'playboy', 'kama sutra', 'bordel', 'prostituta', 'prostituição', 
+            'orgia', 'strip', 'swinger', 'vibrador', 'fetiche',
+            'gore', 'tortura', 'torturado', 'esquartejar', 'massacre', 'decapitar', 'canibal', 
+            'canibalismo', 'snuff', 'chacina', 'sadico', 'sadismo', 'splatter', 'psicopata', 
+            'serial killer', 'assassino em serie', 'banho de sangue', 'carnificina', 'execução',
+            'cocaina', 'heroina', 'metanfetamina', 'crack', 'trafico de drogas', 'overdose'
+        ];
+
+        // Mapeamento de Gêneros do Servidor Externo TMDB
+        const GENRES = {
+            ANIMACAO: { id: 16, name: 'Animação' },
+            FAMILIA: { id: 10751, name: 'Família' },
+            COMEDIA: { id: 35, name: 'Comédia' },
+            AVENTURA: { id: 12, name: 'Aventura' },
+            ACAO: { id: 28, name: 'Ação' },
+            FICCAO: { id: 878, name: 'Ficção Científica' },
+            TERROR: { id: 27, name: 'Terror' },
+            SUSPENSE: { id: 53, name: 'Suspense' }
+        };
+
+        function toggleAuthMode(toRegister) {
+            loginBox.style.display = toRegister ? 'none' : 'block';
+            registerBox.style.display = toRegister ? 'block' : 'none';
+        }
+
+        function executeRegister(e) {
+            e.preventDefault();
+            const name = document.getElementById('regName').value.trim();
+            const email = document.getElementById('regEmail').value.trim();
+            const password = document.getElementById('regPassword').value;
+            const age = parseInt(document.getElementById('regAge').value);
+
+            const userProfile = { name, email, password, age };
+            sessionStorage.setItem(email, JSON.stringify(userProfile));
+            alert("Perfil criado com sucesso!");
+            toggleAuthMode(false);
+        }
+
+        function executeLogin(e) {
+            e.preventDefault();
+            const email = document.getElementById('loginEmail').value.trim();
+            const password = document.getElementById('loginPassword').value;
+
+            const storedProfile = sessionStorage.getItem(email);
+            if(!storedProfile) {
+                alert("Nenhum usuário localizado com este e-mail.");
+                return;
+            }
+
+            const parsedProfile = JSON.parse(storedProfile);
+            if(parsedProfile.password !== password) {
+                alert("Senha incorreta.");
+                return;
+            }
+
+            activeSession = parsedProfile;
+            authOverlay.style.display = 'none';
+            
+            userAvatar.textContent = activeSession.name.substring(0, 1).toUpperCase();
+            userMeta.textContent = `${activeSession.name} (${activeSession.age} Anos)`;
+            
+            // Invoca a geração de menus adequados à idade
+            renderDynamicMenus(activeSession.age);
+            loadHome();
+        }
+
+        function executeLogout() {
+            activeSession = null;
+            authOverlay.style.display = 'flex';
+            document.getElementById('loginEmail').value = '';
+            document.getElementById('loginPassword').value = '';
+            searchInput.value = '';
+            mainContent.innerHTML = '';
+            dynamicGenresNav.innerHTML = '';
+        }
+
+        // ==========================================================================
+        // FILTRAGEM DINÂMICA DE MENUS CONFORME REGRAS NACIONAIS
+        // ==========================================================================
+        function renderDynamicMenus(age) {
+            dynamicGenresNav.innerHTML = '';
+            let allowedGenres = [];
+
+            if (age < 10) {
+                // Até 9 anos: Apenas conteúdo puramente infantil / Livre
+                allowedGenres = [GENRES.ANIMACAO, GENRES.FAMILIA];
+            } else if (age >= 10 && age < 12) {
+                // 10 e 11 anos: Introdução controlada de Comédia leve e Aventura
+                allowedGenres = [GENRES.ANIMACAO, GENRES.FAMILIA, GENRES.COMEDIA, GENRES.AVENTURA];
+            } else if (age >= 12 && age < 14) {
+                // 12 e 13 anos: Permite Fantasias e Ficção Científica infanto-juvenil
+                allowedGenres = [GENRES.ANIMACAO, GENRES.FAMILIA, GENRES.COMEDIA, GENRES.AVENTURA, GENRES.FICCAO];
+            } else if (age >= 14 && age < 18) {
+                // 14 a 17 anos: Libera filmes de Ação e heróis de faixas mais altas. Terror e Suspense travados
+                allowedGenres = [GENRES.FAMILIA, GENRES.COMEDIA, GENRES.AVENTURA, GENRES.ACAO, GENRES.FICCAO];
+            } else {
+                // Maiores de 18 anos: Todo o catálogo liberado
+                allowedGenres = [GENRES.COMEDIA, GENRES.AVENTURA, GENRES.ACAO, GENRES.FICCAO, GENRES.TERROR, GENRES.SUSPENSE];
+            }
+
+            allowedGenres.forEach(genre => {
+                const btn = document.createElement('button');
+                btn.textContent = genre.name;
+                btn.onclick = () => loadGenreMovies(genre.id, genre.name);
+                dynamicGenresNav.appendChild(btn);
+            });
+        }
+
+        // Determina a string descritiva com base na lei brasileira
+        function getLawLabel(age) {
+            if (age < 10) return "Livre (Proteção Máxima)";
+            if (age < 12) return "Classificação 10 Anos";
+            if (age < 14) return "Classificação 12 Anos";
+            if (age < 16) return "Classificação 14 Anos";
+            if (age < 18) return "Classificação 16 Anos";
+            return "Classificação 18 Anos (Sem Restrições)";
+        }
+
+        function getAgeBannerHTML() {
+            return `
+                <div class="law-banner">
+                    <span class="law-indicator">Filtro Ativo</span>
+                    <div>
+                        Perfil adaptado para menores: <strong>${activeSession.age} anos</strong>. 
+                        Diretriz legal mapeada: <strong>${getLawLabel(activeSession.age)}</strong>. 
+                        Qualquer título que ultrapasse essa marca foi ocultado da busca e da tela.
+                    </div>
+                </div>
+            `;
+        }
+
+        // ==========================================================================
+        // MOTOR FILTRADOR DE ZERO TOLERÂNCIA (CONTROLA BUSCA, TELA INICIAL E GÊNEROS)
+        // ==========================================================================
+        async function loadHome() {
+            mainContent.innerHTML = '<div style="text-align:center; padding:40px; color:var(--text-muted);">Carregando catálogo seguro...</div>';
+            const res = await fetch(`${BASE_URL}/trending/movie/week?api_key=${API_KEY}&language=pt-BR`);
+            const data = await res.json();
+            
+            const sanitizedCollection = await processZeroToleranceAlgorithm(data.results);
+            mainContent.innerHTML = getAgeBannerHTML() + renderGrid("🔥 Recomendados para o seu Perfil", sanitizedCollection);
+        }
+
+        async function loadGenreMovies(genreId, genreName) {
+            mainContent.innerHTML = '<div style="text-align:center; padding:40px; color:var(--text-muted);">Processando filtros da categoria...</div>';
+            const res = await fetch(`${BASE_URL}/discover/movie?api_key=${API_KEY}&language=pt-BR&with_genres=${genreId}`);
+            const data = await res.json();
+            
+            const sanitizedCollection = await processZeroToleranceAlgorithm(data.results);
+            mainContent.innerHTML = getAgeBannerHTML() + renderGrid(`🎬 Categoria: ${genreName}`, sanitizedCollection);
+        }
+
+        // BUSCA BLINDADA ETÁRIA E POR STRING
+        async function handleSearch(e) {
+            e.preventDefault();
+            const query = searchInput.value.trim().toLowerCase();
+            if(!query) return;
+
+            // Bloqueia termos inadequados digitados por menores de 30 anos antes de chamar a API
+            if (activeSession.age < 30) {
+                const isQueryIllegal = EXTREME_BLACKLIST.some(term => query.includes(term));
+                if (isQueryIllegal) {
+                    mainContent.innerHTML = getAgeBannerHTML() + `<div style="text-align:center; padding:50px; color:var(--danger-color); font-weight:600; font-size:14px;">⚠️ Busca Bloqueada: Os termos inseridos violam as políticas de proteção para a sua idade.</div>`;
+                    return;
+                }
+            }
+
+            mainContent.innerHTML = '<div style="text-align:center; padding:40px; color:var(--text-muted);">Analisando base e cruzando dados de classificação indicativa...</div>';
+            const res = await fetch(`${BASE_URL}/search/movie?api_key=${API_KEY}&language=pt-BR&query=${encodeURIComponent(query)}`);
+            const data = await res.json();
+            
+            // Passa os resultados da busca pelo mesmo motor rigoroso de corte etário
+            const sanitizedCollection = await processZeroToleranceAlgorithm(data.results);
+            mainContent.innerHTML = getAgeBannerHTML() + renderGrid(`🔍 Resultados de busca para "${query}"`, sanitizedCollection);
+        }
+
+        // ALGORITMO CORE: COMPARA A IDADE LOGADA E A CLASS. INDICATIVA DO FILME INDIVIDUALMENTE
+        async function processZeroToleranceAlgorithm(movies) {
+            if (!movies) return [];
+            
+            const secureOutput = [];
+            for (const movie of movies) {
+                
+                if (activeSession.age < 30) {
+                    if (movie.adult) continue; // Remove flag adulta explicitamente
+
+                    const titleLower = (movie.title || '').toLowerCase();
+                    const overviewLower = (movie.overview || '').toLowerCase();
+                    const rawTitleLower = (movie.original_title || '').toLowerCase();
+
+                    const hitBlacklist = EXTREME_BLACKLIST.some(term => 
+                        titleLower.includes(term) || 
+                        overviewLower.includes(term) || 
+                        rawTitleLower.includes(term)
+                    );
+
+                    if (hitBlacklist) continue; // Descarta se contiver palavras sensíveis
+                }
+
+                // CONSULTA EM TEMPO REAL: Verifica a Classificação Indicativa Oficial (Nacional ou Americana)
+                try {
+                    const res = await fetch(`${BASE_URL}/movie/${movie.id}/release_dates?api_key=${API_KEY}`);
+                    const tracking = await res.json();
+                    
+                    let certificationCode = "L";
+                    
+                    // Prioriza a classificação oficial do Brasil (BR)
+                    const brRelease = tracking.results?.find(r => r.iso_3166_1 === "BR");
+                    if (brRelease && brRelease.release_dates[0]?.certification) {
+                        certificationCode = brRelease.release_dates[0].certification;
+                    } else {
+                        // Fallback para a americana (US) caso a brasileira não esteja no servidor
+                        const usRelease = tracking.results?.find(r => r.iso_3166_1 === "US");
+                        if(usRelease) certificationCode = usRelease.release_dates[0]?.certification || "L";
+                    }
+
+                    // Extrai apenas os números da classificação (Ex: "14" ou "12")
+                    let numericAgeLimit = parseInt(certificationCode.replace(/\D/g, ''));
+                    if (isNaN(numericAgeLimit)) numericAgeLimit = 0; // Se for "L" ou "Livre", vira 0
+
+                    // CORTE CIRÚRGICO DA LEI: Se o filme exigir mais que a idade do usuário logado, descarta imediatamente
+                    if (numericAgeLimit > activeSession.age) {
+                        continue; 
+                    }
+                    
+                    // Se passar por todos os crivos, adiciona à lista que o usuário pode ver
+                    secureOutput.push(movie);
+                } catch {
+                    // Fallback defensivo: se a rota de classificação cair, libera apenas se o usuário for maior de 14 anos
+                    if (activeSession.age >= 14) {
+                        secureOutput.push(movie);
+                    }
+                }
+            }
+            return secureOutput;
+        }
+
+        function renderGrid(title, movies) {
+            if(movies.length === 0) {
+                return `<h2 class="section-title">${title}</h2><p style="color:var(--text-muted); padding:20px 0; font-size:13px;">Nenhum conteúdo localizado atende aos critérios estritos de Classificação Indicativa para a sua faixa etária.</p>`;
+            }
+            return `
+                <h2 class="section-title">${title}</h2>
+                <div class="movies-grid">
+                    ${movies.map(m => `
+                        <div class="movie-card" onclick="openPipelineModal(${m.id})">
+                            <div class="movie-poster">
+                                <img src="${m.poster_path ? IMAGE_BASE + m.poster_path : 'https://via.placeholder.com/500x750?text=Sem+Poster'}" loading="lazy">
+                                <div class="movie-info-overlay">
+                                    <h3 class="movie-title">${m.title}</h3>
+                                </div>
+                            </div>
+                        </div>
+                    `).join('')}
+                </div>
+            `;
+        }
+
+        // ==========================================================================
+        // MONTAGEM DA DETALHE-MODAL DA FICHA TÉCNICA
+        // ==========================================================================
+        async function openPipelineModal(movieId) {
+            try {
+                const [detailsRes, creditsRes, releaseRes] = await Promise.all([
+                    fetch(`${BASE_URL}/movie/${movieId}?api_key=${API_KEY}&language=pt-BR&append_to_response=videos`),
+                    fetch(`${BASE_URL}/movie/${movieId}/credits?api_key=${API_KEY}`),
+                    fetch(`${BASE_URL}/movie/${movieId}/release_dates?api_key=${API_KEY}`)
+                ]);
+
+                const movie = await detailsRes.json();
+                const credits = await creditsRes.json();
+                const releases = await releaseRes.json();
+
+                const officialTrailer = movie.videos?.results?.find(v => v.site === 'YouTube' && (v.type === 'Trailer' || v.type === 'Teaser'));
+                if(officialTrailer) {
+                    videoContainer.innerHTML = `<iframe src="https://www.youtube.com/embed/${officialTrailer.key}?autoplay=1&modestbranding=1&rel=0" allow="autoplay; encrypted-media" allowfullscreen></iframe>`;
+                } else {
+                    videoContainer.innerHTML = `<div style="height:100%; display:flex; align-items:center; justify-content:center; color:var(--text-muted); font-size:13px; padding:30px; text-align:center;">▶️ O material de vídeo promocional não foi localizado para este título.</div>`;
+                }
+
+                // Captura a classificação indicativa para estilizar dinamicamente a badge da modal
+                let finalCert = "L"; 
+                const brRelease = releases.results?.find(r => r.iso_3166_1 === "BR");
+                if (brRelease && brRelease.release_dates[0]?.certification) {
+                    finalCert = brRelease.release_dates[0].certification;
+                }
+
+                // Define a classe CSS correspondente à cor oficial do Ministério da Justiça
+                let certClass = "l";
+                if(finalCert.includes("10")) certClass = "dez";
+                if(finalCert.includes("12")) certClass = "doze";
+                if(finalCert.includes("14")) certClass = "ctor";
+                if(finalCert.includes("16")) certClass = "seis";
+                if(finalCert.includes("18")) certClass = "oito";
+
+                const coreCast = credits.cast?.slice(0, 6) || [];
+                const castHTML = coreCast.map(actor => `
+                    <div class="cast-card">
+                        <img class="cast-img" src="${actor.profile_path ? IMAGE_BASE + actor.profile_path : 'https://via.placeholder.com/150?text=👤'}">
+                        <span class="cast-name">${actor.name}</span>
+                    </div>
+                `).join('');
+
+                modalDetails.innerHTML = `
+                    <h2 class="modal-movie-title">${movie.title}</h2>
+                    <div class="meta-row">
+                        <span class="badge-age ${certClass}">${finalCert === 'L' ? 'Livre' : 'Class. ' + finalCert}</span>
+                        <span class="badge-generic">⭐ ${movie.vote_average.toFixed(1)}</span>
+                        <span class="badge-generic">📅 ${movie.release_date?.split('-')[0] || 'N/A'}</span>
+                    </div>
+                    <p class="modal-overview">${movie.overview || "Sinopse descritiva não disponível em português."}</p>
+                    <div class="cast-section">
+                        <h4>Elenco Principal</h4>
+                        <div class="cast-grid">${castHTML || '<p style="font-size:11px; color:var(--text-muted);">Ficha indisponível.</p>'}</div>
+                    </div>
+                `;
+
+                movieModal.classList.add('active');
+            } catch (err) {
+                alert("Erro ao ler dados complementares.");
+            }
+        }
+
+        function closeModal() {
+            movieModal.classList.remove('active');
+            videoContainer.innerHTML = '';
+            modalDetails.innerHTML = '';
+        }
+    </script>
+</body>
+</html>
